@@ -154,11 +154,12 @@ while($operation){
     #              - Do not forget to update prompt and option numbers
     elseif($choice -eq 9){
         $timeSince = Read-Host -Prompt "Please enter the number of days to search back."
-        Write-Host(getFailedLogins $timeSince | Format-Table | Out-String)
+        $atRiskUsers = getAtRiskUsers $timeSince
+        Write-Host($atRiskUsers | Format-Table | Out-String)
     }
     # TODO: If user enters anything other than listed choices, e.g. a number that is not in the menu   
     #       or a character that should not be accepted. Give a proper message to the user and prompt again.
     else{
-        Write-Host "Error: Invalid Input! Please select a valid option from the menu.`n"
+        Write-Host "Error: Invalid Input! Please select a valid option from the menu.`n" | Out-String
     }
 }

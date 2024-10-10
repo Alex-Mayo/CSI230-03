@@ -64,3 +64,34 @@ function getFailedLogins($timeBack){
 
     return $failedloginsTable
 } # End of function getFailedLogins
+
+function getAtRiskUsers($timesince){
+    $failedlogins = Get-EventLog security -After (Get-Date).AddDays("-"+"$timesince") | Where { $_.InstanceID -eq "4625" }
+
+    $users = ""
+
+    for($i -eq 0; $i -lt $failedlogins.Count; $i++){
+        $usrlines = getMatchingLines $failedlogins[$i].Message "*Account Name*"
+        $user = $usrlines[1].Split(":")[1].trim()
+
+        if($users -contains $user){
+            continue
+        }         
+        $count = 0
+
+        for($j -eq 0; $j -lt $failedlogins.Count; $j++){
+            $usrlines2 = getMatchingLines $failedlogins[$j].Message "*Account Name*"
+            $user2 = $usrlines2[1].Split(":")[1].trim()
+
+            if($user -eq $user2){
+                count++
+            }
+        }
+        if($count -gt 10){
+            $users += $user
+            $users += "`n"
+        }
+    }
+
+    return $users
+}
