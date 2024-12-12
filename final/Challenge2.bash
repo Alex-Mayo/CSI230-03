@@ -11,9 +11,14 @@ while read -r line; do
 	fi
 done < "$iocFile"
 
+:> "$outputFile"
+
 suspicious=()
 for i in "${ioc[@]}"; do
-	suspicious+=$(cat "$logFile"| grep "$i" | cut -d " " -f  1,4,7 | sed 's/\[//g'| sort)
+#	suspicious+=$(cat "$logFile"| grep "$i" | cut -d " " -f  1,4,7 | sed 's/\[//g')
+	while read -r match; do
+		suspicious+=("$match")
+	done < <(grep "$i" "$logFile" | cut -d " " -f 1,4,7 | sed 's/\[//g' | sort)
 done
 
 :>report.txt
